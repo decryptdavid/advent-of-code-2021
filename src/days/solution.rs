@@ -15,17 +15,16 @@ fn load_input() -> Vec<u32> {
     .collect()
 }
 
-pub fn run() {
-  let numbers = load_input();
-  let mut previous_number: Option<u32> = None;
-
-  let differences: Vec<Diff> = numbers.iter()
+fn process_to_diff(numbers: &Vec<u32>, mut previous_number: Option<u32>) -> Vec<Diff> {
+  numbers.iter()
     .map(|number| {
       match &previous_number {
         Some(x) => {
-          if number >= x {
+          if number > x {
             previous_number = Some(*number);
             Diff::Inc
+          } else if number == x {
+            Diff::NoChange
           } else {
             previous_number = Some(*number);
             Diff::Dec
@@ -38,16 +37,30 @@ pub fn run() {
       }
     })
     .filter(|diff| diff == &Diff::Inc)
-    .collect();
+    .collect()
+}
 
-    println!("Answer: {:?}", differences.len());
+pub fn run() {
+  let numbers = load_input();
+  let len = numbers.len();
+  let mut previous_number: Option<u32> = None;
 
+  let differences: Vec<Diff> = process_to_diff(&numbers, previous_number);
 
+  println!("Answer part 1: {:?}", differences.len());
+  previous_number = None;
 
+  let groups = 2;
+  let mut david: Vec<u32> = vec![];
 
+  for (index, number) in numbers.iter().enumerate() {
+    if index < (len - groups) {
+      let value = number + numbers[index+1] + numbers[index+2];
+      david.push(value);
+    }
+  }
+  
+  let ldifferences: Vec<Diff> = process_to_diff(&david, previous_number);
 
-
-
-
-
+  println!("Answer part 2: {:?}", ldifferences.len());
 }
