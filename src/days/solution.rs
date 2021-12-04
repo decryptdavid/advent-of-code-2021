@@ -4,6 +4,7 @@ use std::fs;
 enum Diff {
   Inc,
   Dec,
+  NoChange,
 }
 
 fn load_input() -> Vec<u32> {
@@ -16,20 +17,37 @@ fn load_input() -> Vec<u32> {
 
 pub fn run() {
   let numbers = load_input();
-  let mut previous_number: u32 = 0;
+  let mut previous_number: Option<u32> = None;
 
   let differences: Vec<Diff> = numbers.iter()
     .map(|number| {
-      if number >= &previous_number {
-        previous_number = *number;
-        Diff::Inc
-      } else {
-        previous_number = *number;
-        Diff::Dec
+      match &previous_number {
+        Some(x) => {
+          if number >= x {
+            previous_number = Some(*number);
+            Diff::Inc
+          } else {
+            previous_number = Some(*number);
+            Diff::Dec
+          }
+        },
+        None => {
+          previous_number = Some(*number);
+          Diff::NoChange
+        },
       }
     })
     .filter(|diff| diff == &Diff::Inc)
     .collect();
 
-    println!("Answer: {:?}", differences.len() - 1);
+    println!("Answer: {:?}", differences.len());
+
+
+
+
+
+
+
+
+
 }
